@@ -776,13 +776,16 @@ componentWillMount() {
 ## `componentDidMount()`
 
 - Invoked immediately after a component and all its childern components have been rendered to the DOM
-- Best way for makeing ajax and HTTP request
+
+- *componentDidMount()* is called as soon as  the component is mounted and ready. This is a good place to initiate API calls, if you need to load data from a remote endpoint.
+
+  Unlike the *render()* method, *componentDidMount()* allows the use of *setState()*. Calling the *setState()* here will update state and cause another rendering but it will happen before the browser updates the UI. This is to ensure that the user will not  see any UI updates with the double rendering.
 
 ```js
 componentDidMount() {
   // good for AJAX: fetch, ajax, or subscriptions.
   // invoked once (client-side only).
-  // fires before initial 'render'
+  
 }
 ```
 
@@ -796,6 +799,14 @@ componentWillReceiveProps(nextProps) {
 ```
 
 ## `shouldComponentUpdate()`
+
+This lifecycle can be handy sometimes when you don’t want React to render your state or prop changes.
+
+Anytime *setState()* is called, the component re-renders by default. The *shouldComponentUpdate()* method is used to let React know if a component is not affected by the state and prop changes.
+
+Keep in mind that this lifecycle method should be sparingly used, and it exists only for certain performance optimizations. You cannot update component state in *shouldComponentUpdate()* lifecycle.
+
+**Caution:** Most importantly, do not always rely on it to prevent rendering of your component, since it can lead to several bugs.
 
 ```js
 shouldComponentUpdate(nextProps, nextState) {
@@ -816,20 +827,60 @@ componentWillUpdate(nextProps, nextState) {
 
 ## `componentDidUpdate()`
 
-```
+This lifecycle method is invoked as soon as the updating happens. The most common use case for the *componentDidUpdate()* method is updating the DOM in response to prop or state changes.
+
+You can call *setState()* in this lifecycle, but keep in mind  that you will need to wrap it in a condition to check for state or prop  changes from previous state. Incorrect usage of *setState()* can lead to an infinite loop.
+
+```react
 componentDidUpdate(prevProps, prevState) {
   // invoked immediately after DOM updates
   // does not fire after initial 'render'
+  if (this.props.userName !== prevProps.userName) {
+   this.fetchData(this.props.userName);
+ }
 }
 ```
 
+## static `getDerivedStateFromProps()`
+
+This is one of the newer lifecycle methods introduced very recently by the React team.
+
+This will be a safer alternative to the previous lifecycle method *componentWillReceiveProps().*
+
+It is called just before calling the *render*() method.
+
+This is a *static* function that does not have access to “*this*“.  *getDerivedStateFromProps()* returns an object to update *state* in response to *prop* changes. It can return a *null* if there is no change to state.
+
+This method also exists only for rare use cases where the state depends on changes in props in a component.
+
+```javascript
+static getDerivedStateFromProps(props, state) {
+    if (props.currentRow !== state.lastRow) {
+      return {
+        isScrollingDown: props.currentRow > state.lastRow,
+        lastRow: props.currentRow,
+      };
+    }
+    // Return null to indicate no change to state.
+    return null;
+  }
+```
+
+Keep in mind that this lifecycle method is fired on **every** render.
+
+An example use case where this method may come in handy would be a  <Transition> component that compares its previous and next  children to decide which ones to animate in and out.
+
 ## `componentWillUnmount()`
+
+As the name suggests this lifecycle method is called just before the  component is unmounted and destroyed. If there are any cleanup actions  that you would need to do, this would be the right spot.
 
 ```
 componentWillUnmount() {
   // invoked immediately before a component is unmounted.
 }
 ```
+
+
 
 **Example**
 
@@ -878,7 +929,6 @@ export default class LifecycleB extends Component {
     );
   }
 }
-
 ```
 
 ```txt
@@ -1016,4 +1066,153 @@ function Glossary(props) {
 }
 ```
 
+# Styling
+
+## Stylesheet
+
+```javascript
+// mystyle.css
+.primary {
+	color: orange
+}
+.secondery {
+    color: yellow
+}
+
+// App.js
+function App() {
+  return (
+    <div className="App">
+      <StyleComponent primary={true} />
+    </div>
+  );
+}
+
+// StyleComponent.js 
+// Conditional Styling
+import React, { Component } from "react";
+import "./mystyle.css";
+
+export default class StyleComponent extends Component {
+  render() {
+    let className = this.props.primary ? "primary" : "";
+    return (
+      <div>
+        <h1 className={className}>StyleSheet</h1>
+		<h2 className="secondery">Secondery<h2>
+      </div>
+    );
+  }
+}
+```
+
+### Use Multiple Classes using Template Literls
+
+```javascript
+// mystyle.css
+.primary {
+  text-align: center;
+  color: orange;
+}
+
+.font-xl {
+  font-size: 72px;
+}
+
+export default class StyleComponent extends Component {
+  render() {
+    let className = this.props.primary ? "primary" : "";
+    return (
+      <div>
+        <h1 className={`${className} font-xl`}>StyleSheet</h1>
+      </div>
+    );
+  }
+}
+```
+
+## Inline Styling
+
+```javascript
+const heading = {
+    fontSize: "72px",
+    color: "blue",
+}
+
+function Inline() {
+  return (
+    <div>
+      <h1 style={heading}>Hello World</h1>
+    </div>
+  );
+}
+```
+
+## Styling Modeling 
+
+```javascript
+// appstyle.modules.css
+.success {
+    color: green
+}
+
+import styles from "../appstyle.modules.css"
+
+class App extends Components {
+    render(){
+        <div>
+            <h1 className={styles.success}>Hello world!</h1>
+        </div>
+    }
+}
+```
+
+
+
 # Pure Component
+
+**ReactJS Pure Component** Class compares current state  and props with new props and states to decide whether the React  component should re-render itself or Not.
+
+In simple words, If the previous value of state or props and the new value of state or  props is the same, the component will not re-render itself. Since **Pure Components** restricts the re-rendering when there is no use of re-rendering of the  component. Pure Components are Class Components which extends **React.PureComponent**. 
+
+```javascript
+import React, { PureComponent } from "react";
+
+export class PureComp extends PureComponent {
+  render() {
+    return <div>Hi, {this.props.name}</div>;
+  }
+}
+
+export default PureComp;
+```
+
+Pure components have some **performance improvements** and render optimizations since React implements the `shouldComponentUpdate()` method for them with a shallow comparison for props and state.
+
+> **Pro Tip: ** It is good idea to ensure that all the childern components are also pure to avoid unexpected behaviour. 
+
+It never mutate the stare. Always return a new object that reflects the new state.
+
+## Are React functional components pure?
+
+Functional components are very useful in React, especially when you  want to isolate state management from the component. That’s why they are often called stateless components.
+
+However, functional components cannot leverage the performance improvements and render optimizations that come with `React.PureComponent` since they are not classes by definition.
+
+If you want React to treat a functional component as a pure  component, you’ll have to convert the functional component to a class  component that extends `React.PureComponent`.
+
+# Memo
+
+To achive pure components feature in functional components
+
+```javascript
+import React from "react";
+
+function MemoComp({name}) {
+return <div><h1>{name}</h1></div>;
+}
+
+export default React.memo(MemoComp);
+```
+
+# Ref
