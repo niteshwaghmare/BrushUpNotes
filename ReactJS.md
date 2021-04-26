@@ -1191,7 +1191,7 @@ Pure components have some **performance improvements** and render optimizations 
 
 > **Pro Tip: ** It is good idea to ensure that all the childern components are also pure to avoid unexpected behaviour. 
 
-It never mutate the stare. Always return a new object that reflects the new state.
+It never mutate the state. Always return a new object that reflects the new state.
 
 ## Are React functional components pure?
 
@@ -1216,3 +1216,38 @@ export default React.memo(MemoComp);
 ```
 
 # Ref
+
+```react
+import React, { Component } from "react";
+
+class RefDemo extends Component {
+  constructor(props) {
+    super(props);
+
+    this.inputref = React.createRef();
+  }
+
+  componentDidMount() {
+    // Focus on field on page load
+    this.inputref.current.focus();
+  }
+
+  clickHandler = () => {
+    // Get input data using ref
+    alert(this.inputref.current.value);
+  };
+
+  render() {
+    return (
+      <div>
+        <input type="text" ref={this.inputref} />
+        <button onClick={this.clickHandler}>Click</button>
+      </div>
+    );
+  }
+}
+
+export default RefDemo;
+
+```
+

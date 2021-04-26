@@ -171,6 +171,84 @@ The available constraints in SQL are:
 - **DEFAULT**: This constraint specifies a default value for the column when no value is specified by the user.
 - **AUTO INCREMENT**: Auto-increment allows a unique number to be generated automatically when a new record is inserted into a table.
 
+### Primary Key
+
+The `PRIMARY KEY` constraint uniquely identifies each record in a table.
+
+Primary keys must contain UNIQUE values, and cannot contain NULL values.
+
+A table can have only ONE primary key; and in the table, this primary key can  consist of single or multiple columns (fields).
+
+```mysql
+CREATE TABLE Persons (
+    ID int NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int,
+    PRIMARY KEY (ID)
+); 
+
+CREATE TABLE Persons (
+    ID int NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255) NOT NULL,
+    Age int,
+    CONSTRAINT PK_Person PRIMARY KEY (ID,LastName, FirstName)
+); 
+
+-- Creating Primary Key
+ALTER TABLE Persons ADD PRIMARY KEY (ID); 
+
+-- To allow naming of a PRIMARY KEY constraint, and for defining a PRIMARY KEY constraint on multiple columns
+ALTER TABLE Persons ADD CONSTRAINT PK_Person PRIMARY KEY (ID,LastName); 
+
+-- To Drop Primary key
+ALTER TABLE Persons DROP PRIMARY KEY;
+```
+
+> **Note:** In the example above there is only ONE ` PRIMARY KEY` (PK_Person).  However, the VALUE of the primary key is made up of TWO COLUMNS (ID + LastName).
+
+### Foreign Key
+
+The `FOREIGN KEY` constraint is used to prevent actions that would destroy links between tables.
+
+A `FOREIGN KEY` is a field (or collection of fields) in one table, that refers to  the `PRIMARY KEY` in another table.
+
+The table with the foreign key is called the child table, and the table  with the primary key is called the referenced or parent table.
+
+```mysql
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
+); 
+
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    CONSTRAINT FK_PersonOrder FOREIGN KEY (PersonID)
+    REFERENCES Persons(PersonID)
+); 
+
+ALTER TABLE Orders ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID);
+
+ALTER TABLE Orders ADD CONSTRAINT FK_PersonOrder FOREIGN KEY (PersonID) REFERENCES Persons(PersonID); 
+
+ALTER TABLE Orders DROP FOREIGN KEY FK_PersonOrder; 
+```
+
+**Notice** that the "PersonID" column in the "Orders" table points to the "PersonID" column in the "Persons" table.
+
+The "PersonID" column in the "Persons" table is the `PRIMARY KEY` in the "Persons" table.
+
+The "PersonID" column in the "Orders" table is a ` FOREIGN KEY` in the "Orders" table.
+
+The `FOREIGN KEY` constraint prevents invalid data from being inserted into the foreign key column, because it has to be one of the values contained in the parent table.
+
 **How to specify constraints?**
 We can specify  constraints at the time of creating the table using CREATE TABLE  statement. We can also specify the constraints after creating a table  using ALTER TABLE statement.
 
@@ -923,9 +1001,13 @@ SELECT column_name(n) FROM table_1 MINUS SELECT column_name(n) FROM table_2;
 
 A `JOIN` clause is used to combine rows from two or more tables, based on  a related column between them.
 
+![Mysql_join](img/Mysql_join.png)
+
 ## Inner Join
 
 The `INNER JOIN` keyword selects records that have matching values in both tables.
+
+
 
 ```mysql
 -- Syntax
@@ -992,3 +1074,230 @@ A self join is a regular join, but the table is joined with itself.
 SELECT column_name(s) FROM table1 T1, table1 T2 WHERE condition;
 ```
 
+# Tuple
+
+A relation R can be listed number of times as per the requirements. In this situation we need a way to refer to each occurrence of R. SQL allows us to define for each occurrence of R in the FROM cluse with the help of an "alias". This alias is known as **tuple variable**. 
+
+```mysql
+SELECT table1.column_name, table2.column_name, table1.column_name FROM table1, table2 WHERE condition;
+
+select city.name, city.Population, country.LifeExpectancy from city, country where country.Code = city.CountryCode;
+
++------------------------------------+------------+----------------+
+| name                               | Population | LifeExpectancy |
++------------------------------------+------------+----------------+
+| Oranjestad                         |      29034 |           78.4 |
+| Kabul                              |    1780000 |           45.9 |
+| Qandahar                           |     237500 |           45.9 |
+| Herat                              |     186800 |           45.9 |
+| Bulawayo                           |     621742 |           37.8 |
+| Chitungwiza                        |     274912 |           37.8 |
+| Mount Darwin                       |     164362 |           37.8 |
+| Mutare                             |     131367 |           37.8 |
+| Gweru                              |     128037 |           37.8 |
++------------------------------------+------------+----------------+
+
+```
+
+# Nested Queries
+
+Writing a query inside another query is known as nested query or sub-query. Te inner query gets executed first, then the output on inner query is given as input to outer query.
+
+```mysql
+> select * from countrylanguage WHERE CountryCode = (SELECT Code FROM  country WHERE name="India");
++-------------+-----------+------------+------------+
+| CountryCode | Language  | IsOfficial | Percentage |
++-------------+-----------+------------+------------+
+| IND         | Asami     | F          |        1.5 |
+| IND         | Bengali   | F          |        8.2 |
+| IND         | Gujarati  | F          |        4.8 |
+| IND         | Hindi     | T          |       39.9 |
+| IND         | Kannada   | F          |        3.9 |
+| IND         | Malajalam | F          |        3.6 |
+| IND         | Marathi   | F          |        7.4 |
+| IND         | Orija     | F          |        3.3 |
+| IND         | Punjabi   | F          |        2.8 |
+| IND         | Tamil     | F          |        6.3 |
+| IND         | Telugu    | F          |        7.8 |
+| IND         | Urdu      | F          |        5.1 |
++-------------+-----------+------------+------------+
+12 rows in set (0.03 sec)
+```
+
+# PL/SQL
+
+## Procedures
+
+## Trigger
+
+## Cursor
+
+# Users and Privileges
+
+## User Operations
+
+```mysql
+-- Show User
+SELECT User, Host FROM mysql.user;
+
+-- Create User
+CREATE USER 'someuser'@'localhost' IDENTIFIED BY 'somepassword';
+
+-- Delete User
+DROP USER 'someuser'@'localhost';
+
+-- Change Password
+ALTER USER 'username'@'localhost' IDENTIFIED BY 'new_password';
+
+
+FLUSH PRIVILEGES;
+```
+
+## Grant Permissions
+
+**Permission Type**
+
+- **ALL** :
+- **SELECT**
+- **INSERT **
+- **UPDATE **
+- **DELETE **
+- **DROP**
+
+```mysql
+-- Syntax
+GRANT permission ON database.table TO 'username'@'localhost';
+
+-- Permission to all databases
+GRANT permission ON '.' TO 'username'@'localhost';
+
+-- Permission to specifc database
+GRANT permission ON database_name.* TO 'username'@'localhost';
+
+-- All permission to Specific Table
+GRANT ALL ON database_name.table_name TO 'username'@'localhost';
+
+-- Example
+GRANT INSERT,SELECT,UPDATE ON database_name.table_name TO 'username'@'localhost';
+
+-- Updating Previleges
+GRANT SELECT, INSERT, UPDATE ON databaseName.* TO 'userName'@'localhost';
+```
+
+## Revoke
+
+```mysql
+-- Remove all access
+REVOKE ALL PRIVILEGES  ON *.* FROM 'user_name'@'localhost';
+
+REVOKE ALL PRIVILEGES  ON database_name.table_name FROM 'user_name'@'localhost';
+
+-- SELECT, INSERT, UPDATE, DROP, DELETE
+REVOKE DROP ON database_name.table_name FROM 'user_name'@'localhost';
+```
+
+# Normalization
+
+**Normalization** is a database design technique that  reduces data redundancy and eliminates undesirable characteristics like  Insertion, Update and Deletion Anomalies. Normalization rules divides  larger tables into smaller tables and links them using relationships.  The purpose of Normalization in SQL is to eliminate redundant  (repetitive) data and ensure data is stored logically. 
+
+Understand with example
+
+|  Full name   | Address                | Movies Rented                                  | Salutation |
+| :----------: | ---------------------- | ---------------------------------------------- | ---------- |
+| Janet Jones  | First Street Plot no 4 | Pirates of the Caribbeean, Clash of the Titans | Ms.        |
+| Robert Phill | 3rd Street 34          | Forgetting Sarah Marshal, MI:6                 | Mr         |
+| Robert Phill | 4th Avenue             | Avatar                                         | Mr         |
+
+Now let's move into 1st Normal
+
+## 1NF (First normal form) Rule
+
+- Each table cell should contain a single value.
+- Each record needs to be unique.
+
+|  Full name  | Address                | Movies Rented            | Salutation |
+| :---------: | ---------------------- | ------------------------ | ---------- |
+| Janet Jones | First Street Plot no 4 | Pirates of the Caribbean | Ms.        |
+| Janet Jones | First Street Plot no 4 | Clash of the Titans      | Ms         |
+| Robert Phil | 3rd Street 34          | Forgetting Sarah Marshal | Mr         |
+| Robert Phil | 3rd Street 34          | MI:6                     | Mr         |
+| Robert Phil | 4th Avenue             | Avatar                   | Mr         |
+
+## 2NF (Second Normal Form) Rule
+
+- Rule 1 - Be in 1NF
+- Rule 2- Single Column Primary Key
+
+| Membership ID | Full Name   | Address                | Salutation |
+| ------------- | ----------- | ---------------------- | ---------- |
+| 1             | Janet Jones | First Street Plot no 4 | Ms.        |
+| 2             | Robert Phil | 3rd Street 34          | Mr.        |
+| 3             | Robert Phil | 5th Avenue             | Mr.        |
+
+| Membership ID |      Movies Rented       |
+| :-----------: | :----------------------: |
+|       1       | Pirates of the Caribbean |
+|       1       |       Harry Potter       |
+|       2       | Forgetting Sarah Marshal |
+|       2       |           MI:6           |
+|       3       |          Avatar          |
+
+## 3NF (Third Normal Form) Rules
+
+- Rule 1 - Be in 2NF
+- Rule 2 - Has no transitive functional depedencies
+
+> A transitive [functional dependency](https://www.guru99.com/dbms-functional-dependency.html) is when changing a non-key column, might cause any of the other non-key columns to change 
+
+**Example**
+
+| Membership ID | Full Name   | Address                | Salutation ID |
+| ------------- | ----------- | ---------------------- | ------------- |
+| 1             | Janet Jones | First Street Plot no 4 | 1             |
+| 2             | Robert Phil | 3rd Street 34          | 2             |
+| 3             | Robert Phil | 5th Avenue             | 2             |
+
+| Membership ID |      Movies Rented       |
+| :-----------: | :----------------------: |
+|       1       | Pirates of the Caribbean |
+|       1       |       Harry Potter       |
+|       2       | Forgetting Sarah Marshal |
+|       2       |           MI:6           |
+|       3       |          Avatar          |
+
+| Salutation ID | Salutation |
+| :-----------: | :--------: |
+|       1       |    Mr.     |
+|       2       |    Ms.     |
+|       3       |    Mrs.    |
+|       4       |    Dr.     |
+
+![mysql schema](img/mysql schema.png)
+
+## BCNF (Boyce-Codd Normal Form)
+
+ Even when a database is in 3rd Normal Form, still there would be anomalies resulted if it has more than one **Candidate** Key. 
+
+ Sometimes is BCNF is also referred as **3.5 Normal Form.** 
+
+# Database Design Steps
+
+### Determine the purpose of the database
+
+The very first thing you must do is decide the purpose of your  database. You need to determine what it will be used for, how you expect to use it, who you expect to use it, etc. This will help you develop a  mission statement and prepare for the remaining steps.
+
+### Find and organize the information
+
+Once you have figured out the purpose of your database, you’ll need  to gather the data that needs to be stored there. After you gather the  necessary information, you need to organize it. It’s usually easiest to  organize the information by breaking each piece into its smallest useful parts.
+
+### Create tables for the information
+
+Once the information is organized, you’re going to want to divide up  the information into tables. Separate the data into major entities or  subjects. Then, each subject will become a table. Label each table with  the subject within that table.
+
+### Establish relationships between the tables
+
+It can be hard to use a database with independent or unrelated  tables. It is best to look at each individual table and decide how the  data within relates to the data in other tables. You then can add fields to the tables or create new ones to clarify the established  relationships so everything is connected.
+
+### Redefine your design
+
+One of the last database design steps is to take a step back once  you’ve “completed” the database. You want to scan it and analyze the  design for any errors. Run the database with the tables and record to  see if you can get the results you want. You should then make  adjustments to get the final result you desire.
