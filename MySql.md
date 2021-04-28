@@ -184,7 +184,7 @@ CREATE TABLE Persons (
     ID int NOT NULL,
     LastName varchar(255) NOT NULL,
     FirstName varchar(255),
-    Age int,
+    Age int CHECK Age > 18,
     PRIMARY KEY (ID)
 ); 
 
@@ -192,8 +192,9 @@ CREATE TABLE Persons (
     ID int NOT NULL,
     LastName varchar(255) NOT NULL,
     FirstName varchar(255) NOT NULL,
+    Email varchar(255) ,
     Age int,
-    CONSTRAINT PK_Person PRIMARY KEY (ID,LastName, FirstName)
+    CONSTRAINT PK_Person PRIMARY KEY (ID,Email)
 ); 
 
 -- Creating Primary Key
@@ -1103,6 +1104,16 @@ select city.name, city.Population, country.LifeExpectancy from city, country whe
 
 Writing a query inside another query is known as nested query or sub-query. Te inner query gets executed first, then the output on inner query is given as input to outer query.
 
+**Rules: **
+
+- Subqueries must be enclosed within parentheses.
+- A subquery can have only one column in the SELECT clause, unless  multiple columns are in the main query for the subquery to compare its  selected columns.
+- An ORDER BY command cannot be used in a subquery, although the  main query can use an ORDER BY. The GROUP BY command can be used to  perform the same function as the ORDER BY in a subquery.
+- Subqueries that return more than one row can only be used with multiple value operators such as the IN operator.
+- The SELECT list cannot include any references to values that evaluate to a BLOB, ARRAY, CLOB, or NCLOB.
+- A subquery cannot be immediately enclosed in a set function.
+- The BETWEEN operator cannot be used with a subquery. However, the BETWEEN operator can be used within the subquery.
+
 ```mysql
 > select * from countrylanguage WHERE CountryCode = (SELECT Code FROM  country WHERE name="India");
 +-------------+-----------+------------+------------+
@@ -1122,6 +1133,9 @@ Writing a query inside another query is known as nested query or sub-query. Te i
 | IND         | Urdu      | F          |        5.1 |
 +-------------+-----------+------------+------------+
 12 rows in set (0.03 sec)
+
+-- TO Avoid ERROR 1242 (21000): Subquery returns more than 1 row
+> SELECT * FROM CUSTOMERS WHERE ID IN (SELECT ID FROM CUSTOMERS WHERE SALARY > 4500) ;
 ```
 
 # PL/SQL
