@@ -364,3 +364,181 @@ CREATE TABLE table_name (
 ALTER TABLE table_name AUTO_INCREMENT=100;
 ```
 
+# With `WHERE` Clause
+
+`SELECT * FROM table_name WHERE condition;`
+
+## Normal Conditions
+
+| Operator | Description                                                  |
+| :------- | :----------------------------------------------------------- |
+| =        | Equal                                                        |
+| >        | Greater than                                                 |
+| <        | Less than                                                    |
+| >=       | Greater than or equal                                        |
+| <=       | Less than or equal                                           |
+| <>       | Not equal. **Note:** In some versions of SQL this operator may be written as != |
+| BETWEEN  | Between a certain range                                      |
+| LIKE     | Search for a pattern                                         |
+| IN       | To specify multiple possible values for a column             |
+
+## `AND OR & NOT`
+
+```mysql
+SELECT column1, column2, ... FROM table_name WHERE condition1 AND condition2 AND condition3 ...;
+
+SELECT column1, column2, ... FROM table_name WHERE condition1 OR condition2 OR condition3 ...;
+
+SELECT column1, column2, ... FROM table_name WHERE NOT condition;
+```
+
+## `NULL`
+
+```mysql
+SELECT column_names FROM table_name WHERE column_name IS NULL;
+SELECT column_names FROM table_name WHERE column_name IS NOT NULL;
+```
+
+> 🔥 **Pro Tip:** Always use IS NULL to look for NULL values.
+
+## `LIMIT`
+
+```mysql
+-- Getting specific number of records
+SELECT column_name(s) FROM table_name WHERE condition LIMIT number;
+
+-- Getting specific number of records from certain point(offset).
+SELECT column_name(s) FROM table_name WHERE condition LIMIT offset, row_count;
+```
+
+## `LIKE`
+
+`SELECT * FROM table_name WHERE LIKE pattern;`
+
+`SELECT * FROM users WHERE dept NOT LIKE 'd%';`
+
+| LIKE Operator          | Description                                                  |
+| ---------------------- | ------------------------------------------------------------ |
+| WHERE Name LIKE 'a%'   | Finds any values that start with "a"                         |
+| WHERE Name LIKE '%a'   | Finds any values that end with "a"                           |
+| WHERE Name LIKE '%or%' | Finds any values that have "or" in any position              |
+| WHERE Name LIKE '_r%'  | Finds any values that have "r" in the second position        |
+| WHERE Name LIKE 'a_%'  | Finds any values that start with "a" and are at least 2 characters in length |
+| WHERE Name LIKE 'a__%' | Finds any values that start with "a" and are at least 3 characters in length |
+| WHERE Name LIKE 'a%o'  | Finds any values that start with "a" and ends with "o"       |
+
+## `BETWEEN`
+
+```mysql
+SELECT column_name(s) FROM table_name WHERE column_name BETWEEN value1 AND value2;
+
+-- Between with order by
+SELECT column_name(s) FROM table_name WHERE column_name BETWEEN value1 AND value2 order by column_name1;
+```
+
+## `IN`
+
+```mysql
+SELECT column_name(s) FROM table_name WHERE column_name IN (value1, value2, ...);
+```
+
+## `EXISTS`
+
+```MYSQL
+-- The EXISTS operator is used to test for the existence of any record in a subquery.
+SELECT column_name(s) FROM table_name WHERE EXISTS (SELECT column_name FROM table_name WHERE condition);
+```
+
+# Update Data
+
+```mysql
+-- We can use all of above conditional clause
+UPDATE table_name SET column1 = value1, column2 = value2, ... WHERE condition;
+```
+
+# Delete Data
+
+```mysql
+-- We can use all of above conditional clause
+DELETE FROM table_name WHERE condition;
+```
+
+
+
+# Order by
+
+```mysql
+SELECT column1, column2, ... FROM table_name ORDER BY column1, column2, ... ASC|DESC;
+
+-- Acending is by default 
+SELECT column1, column2, ... FROM table_name ORDER BY column1 DESC;
+
+-- First sort column1 in acending order then column2 descending order
+SELECT * FROM table_name ORDER BY column1 ASC, column2 DESC;
+```
+
+# Aliases `AS`
+
+`SELECT column_name AS alias_name FROM table_name;`
+
+**Aliases Table **
+
+`SELECT column_name(s) FROM table_name AS alias_name;`
+
+# CASE
+
+```mysql
+CASE
+    WHEN condition1 THEN result1
+    WHEN condition2 THEN result2
+    WHEN conditionN THEN resultN
+    ELSE result
+END;
+
+
+-- Case Use
+SELECT OrderID, Quantity,
+CASE
+    WHEN Quantity > 30 THEN 'The quantity is greater than 30'
+    WHEN Quantity = 30 THEN 'The quantity is 30'
+    ELSE 'The quantity is under 30'
+END AS QuantityText
+FROM OrderDetails;
+
+-- IF Use
+SELECT Name,
+District,
+IF(Populcation >= 1000000, 'Above 10L', 'Below 10L') AS `Population Above 10L`
+FROM indian_city ;
+```
+
+> **Note:** For better understaning please look in MySQL.md
+
+# Group by
+
+# Having
+
+
+
+# Join
+
+![Mysql_join](img/Mysql_join.png)
+
+```mysql
+-- Inner Join
+SELECT column_name(s) FROM table1 INNER JOIN table2 ON table1.column_name = table2.column_name;
+
+-- Left Join
+SELECT column_name(s) FROM table1 LEFT JOIN table2 ON table1.column_name = table2.column_name;
+
+-- Right Join
+SELECT column_name(s) FROM table1 RIGHT JOIN table2 ON table1.column_name = table2.column_name;
+
+-- Full Outer Join / Cross join
+SELECT column_name(s)
+FROM table1 FULL OUTER JOIN table2 ON table1.column_name = table2.column_name WHERE condition;
+
+-- Self Join
+SELECT column_name(s) FROM table1 T1, table1 T2 WHERE condition;
+```
+
