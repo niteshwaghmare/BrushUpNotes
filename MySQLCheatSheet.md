@@ -27,6 +27,27 @@ SHOW DATABASES;
 USE database_name; -- set it as the current database
 ```
 
+# User Operations
+
+```mysql
+-- Show User
+SELECT User, Host FROM mysql.user;
+
+-- Create User
+CREATE USER 'someuser'@'localhost' IDENTIFIED BY 'somepassword';
+
+-- Delete User
+DROP USER 'someuser'@'localhost';
+
+-- Change Password
+ALTER USER 'username'@'localhost' IDENTIFIED BY 'new_password';
+
+
+FLUSH PRIVILEGES;
+```
+
+
+
 # Data Types
 
 | MEDIUMBLOB                                               | String (0 - 16777215)                                        |
@@ -542,3 +563,167 @@ FROM table1 FULL OUTER JOIN table2 ON table1.column_name = table2.column_name WH
 SELECT column_name(s) FROM table1 T1, table1 T2 WHERE condition;
 ```
 
+# Index
+
+```mysql
+-- Duplicate values are allowed
+CREATE INDEX index_name ON table_name (column1, column2, ...);
+
+-- Duplicate values are not allowed
+CREATE UNIQUE INDEX index_name ON table_name (column1, column2, ...);
+
+-- Drop Index
+ALTER TABLE table_name DROP INDEX index_name;
+```
+
+# Views
+
+```mysql
+-- Creating index
+CREATE VIEW view_name AS (any  select query);
+CREATE VIEW view_name AS SELECT column1, column2, ... FROM table_name WHERE condition;
+
+-- accessing 
+select * from view_name;
+
+-- updateing data from view
+UPDATE view_name SET column_name = "Value" where condition;
+
+-- Updating View
+CREATE OR REPLACE VIEW view_name AS SELECT column1, column2, ... FROM table_name WHERE condition;
+
+-- droping view
+DROP VIEW view_name;
+```
+
+# Set Operations 
+
+```mysql
+-- all distinct rows selected by either query.
+SELECT col_name(n) from table_1 UNION SELECT col_name(n) FROM table_2;
+
+-- all rows selected by either query including duplicates.
+SELECT * FROM table_1 UNION ALL SELECT * FROM table_2;
+
+-- only those rows which are common to both the queries.
+SELECT column_name(n) FROM table_1 INTERSECT SELECT column_name(n) FROM table_2;
+
+-- Minus operator display the rows which are present in the first query but absent in the second query with no duplicates and data is arranged in ascending order by default.
+SELECT column_name(n) FROM table_1 MINUS SELECT column_name(n) FROM table_2;
+```
+
+
+
+# Aggregate Functions
+
+```mysql
+SELECT COUNT(column_name) FROM table_name;
+SELECT MAX(column_name) FROM table_name;
+SELECT MIN(column_name) FROM table_name;
+SELECT SUM(column_name) FROM table_name;
+```
+
+# Operators
+
+## Arithmetic Operators
+
+| Operator | Description |
+| :------- | :---------- |
+| +        | Add         |
+| -        | Subtract    |
+| *        | Multiply    |
+| /        | Divide      |
+| %        | Modulo      |
+
+------
+
+## Bitwise Operators
+
+| Operator | Description          |
+| :------- | :------------------- |
+| &        | Bitwise AND          |
+| \|       | Bitwise OR           |
+| ^        | Bitwise exclusive OR |
+
+------
+
+## Comparison Operators
+
+| Operator | Description              |
+| :------- | :----------------------- |
+| =        | Equal to                 |
+| >        | Greater than             |
+| <        | Less than                |
+| >=       | Greater than or equal to |
+| <=       | Less than or equal to    |
+| <>       | Not equal to             |
+
+
+
+## Compound Operators
+
+| Operator | Description              |
+| :------- | :----------------------- |
+| +=       | Add equals               |
+| -=       | Subtract equals          |
+| *=       | Multiply equals          |
+| /=       | Divide equals            |
+| %=       | Modulo equals            |
+| &=       | Bitwise AND equals       |
+| ^-=      | Bitwise exclusive equals |
+| \|*=     | Bitwise OR equals        |
+
+------
+
+## Logical Operators
+
+| Operator | Description                                                  |
+| :------- | :----------------------------------------------------------- |
+| ALL      | TRUE if all of the subquery values meet the condition        |
+| AND      | TRUE if all the conditions separated by AND is TRUE          |
+| ANY      | TRUE if any of the subquery values meet the condition        |
+| BETWEEN  | TRUE if the operand is within the range of comparisons       |
+| EXISTS   | TRUE if the subquery returns one or more records             |
+| IN       | TRUE if the operand is equal to one of a list of expressions |
+| LIKE     | TRUE if the operand matches a pattern                        |
+| NOT      | Displays a record if the condition(s) is NOT TRUE            |
+| OR       | TRUE if any of the conditions separated by OR is TRUE        |
+
+# Grant Permissions
+
+```mysql
+-- Permission Types: ALL, SELECT, INSERT, UPDATE, DELETE, DROP
+-- Syntax
+GRANT permission ON database.table TO 'username'@'localhost';
+
+-- Permission to all databases
+GRANT permission ON '.' TO 'username'@'localhost';
+
+-- Permission to specifc database
+GRANT permission ON database_name.* TO 'username'@'localhost';
+
+-- All permission to Specific Table
+GRANT ALL ON database_name.table_name TO 'username'@'localhost';
+
+-- Example
+GRANT INSERT,SELECT,UPDATE ON database_name.table_name TO 'username'@'localhost';
+
+-- Updating Previleges
+GRANT SELECT, INSERT, UPDATE ON databaseName.* TO 'userName'@'localhost';
+```
+
+# Revoke Permissions
+
+```mysql
+-- Remove all access
+REVOKE ALL PRIVILEGES  ON *.* FROM 'user_name'@'localhost';
+
+REVOKE ALL PRIVILEGES  ON database_name.table_name FROM 'user_name'@'localhost';
+
+-- SELECT, INSERT, UPDATE, DROP, DELETE
+REVOKE DROP ON database_name.table_name FROM 'user_name'@'localhost';
+```
+
+# MySQL Built-in Functions 
+
+https://www.w3schools.com/sql/sql_ref_mysql.asp

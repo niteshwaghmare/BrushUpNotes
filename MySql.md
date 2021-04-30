@@ -942,6 +942,10 @@ The `GROUP BY` statement is often used with aggregate functions (`COUNT()`,  `MA
 
 # HAVING Clause
 
+# Views
+
+https://youtu.be/DCp0oFVG_fk
+
 # Set Operations
 
 Set operations are supported by SQL to be performed on table data. for these operations special operators knows as Set Operators are used to join the result of multiple `SELECT` Statements.
